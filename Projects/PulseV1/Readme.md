@@ -74,7 +74,7 @@
 
 ## 🚀 PulseV2 Concept
 
-![PulseV2](./Files/Oledview.jpg)
+![PulseV2](./Files/PulseV2.png)
 
 While PulseV1 proves what’s possible in a tiny form factor, **PulseV2** envisions a leap forward in smart, modular, and wireless functionality. It will expand the project’s potential beyond a single device into a customizable platform.
 
