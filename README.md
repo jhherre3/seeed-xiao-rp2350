@@ -81,10 +81,10 @@ This board is small but mighty. Ideal for:
 
 ## 📎 Links
 
-- [Seeed XIAO RP2040 Wiki](https://wiki.seeedstudio.com/XIAO-RP2040/)
+- [Seeed XIAO RP2350 Wiki](https://wiki.seeedstudio.com/getting-started-xiao-rp2350/)
 - [CircuitPython Official Website](https://circuitpython.org/)
 - [Adafruit Library Reference](https://docs.circuitpython.org/projects/)
-- [RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)
+- [RP2350 Datasheet/ Schm.](https://wiki.seeedstudio.com/getting-started-xiao-rp2350/#assets--resources)
 
 ---
 
