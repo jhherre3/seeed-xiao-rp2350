@@ -49,7 +49,7 @@ Although the XIAO RP2350 supports C/C++ and MicroPython, this repo focuses on **
 ## 🛠 Getting Started with CircuitPython
 
 1. **Install CircuitPython**  
-   Go to [https://circuitpython.org/board/xiao_rp2040/](https://circuitpython.org/board/xiao_rp2040/) and download the latest `.uf2` firmware.
+   Go to [https://circuitpython.org/board/xiao_rp2350/](https://circuitpython.org/board/seeeduino_xiao_rp2350/) and download the latest `.uf2` firmware.
 
 2. **Flash the Board**
    - Hold the **BOOT** button while connecting via USB.
