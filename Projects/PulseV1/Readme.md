@@ -1,6 +1,6 @@
 #PulseV1
 
-![OLED View](Projects/PulseV1/Files/Oledview.jpg)
+![OLED View](./Files/Oledview.jpg)
 
 
 **PulseV1** is a compact, 18650-powered, CircuitPython-based multifunction gadget. Designed for portability and versatility, it features music playback, lighting modes, meditation guidance, timers, and an interactive OLED interface — all controlled by a single button. Ideal for learning, tinkering, or just carrying a little tech fun in your pocket.
