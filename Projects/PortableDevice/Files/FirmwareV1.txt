@@ -1,0 +1,278 @@
+import time
+import board
+import neopixel
+import pwmio
+import digitalio
+import displayio
+import terminalio
+from adafruit_display_text import label
+import adafruit_displayio_ssd1306
+
+# --- NeoPixel Setup ---
+pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, auto_write=False)
+pixel.brightness = 0.3
+
+def wheel(pos):
+    if pos < 85:
+        return (int(pos * 3), int(255 - pos * 3), 0)
+    elif pos < 170:
+        pos -= 85
+        return (int(255 - pos * 3), 0, int(pos * 3))
+    else:
+        pos -= 170
+        return (0, int(pos * 3), int(255 - pos * 3))
+
+# --- Buzzer Setup ---
+buzzer = pwmio.PWMOut(board.D10, duty_cycle=0, frequency=440, variable_frequency=True)
+
+# --- Button Setup ---
+button = digitalio.DigitalInOut(board.D9)
+button.direction = digitalio.Direction.INPUT
+button.pull = digitalio.Pull.UP
+
+# --- OLED Setup ---
+displayio.release_displays()
+i2c = board.I2C()
+display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
+WIDTH, HEIGHT = 128, 32
+display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=WIDTH, height=HEIGHT)
+
+# --- Menu Setup ---
+menu_items = [
+    "Star Trek", "Rainbow LED", "Timer", "Meditation", "Animation", "Flashlight", "Strobe", "Sleep Mode"
+]
+current_index = 0
+text_area = label.Label(terminalio.FONT, text="", x=0, y=12)
+main_group = displayio.Group()
+main_group.append(text_area)
+display.root_group = main_group
+
+def update_display():
+    text_area.text = f"> {menu_items[current_index]}"
+
+# --- Star Trek Song ---
+NOTE = {
+    "D4": 294, "E4": 330, "G4": 392, "A4": 440,
+    "B4": 494, "C5": 523, "D5": 587, "REST": 0
+}
+tempo = 80
+wholenote = (60000 * 4) / tempo
+melody = [
+    ("D4", -8), ("G4", 16), ("C5", -4),
+    ("B4", 8), ("G4", -16), ("E4", -16), ("A4", -16),
+    ("D5", 2)
+]
+
+def play_star_trek():
+    for note, dur in melody:
+        duration = wholenote / abs(dur)
+        if dur < 0:
+            duration *= 1.5
+        freq = NOTE[note]
+        if freq == 0:
+            time.sleep(duration / 1000)
+        else:
+            buzzer.frequency = freq
+            buzzer.duty_cycle = 32768
+            time.sleep((duration * 0.9) / 1000)
+            buzzer.duty_cycle = 0
+            time.sleep((duration * 0.1) / 1000)
+
+# --- Timer Submenu ---
+timer_durations = [10, 30, 60]
+timer_index = 0
+
+def timer_submenu():
+    global timer_index
+    in_menu = True
+    last_button_state = button.value
+    while in_menu:
+        text_area.text = f"Timer: {timer_durations[timer_index]}s"
+        display.refresh()
+        time.sleep(0.05)
+        current_button = button.value
+
+        if not current_button and last_button_state:
+            press_start = time.monotonic()
+            while not button.value:
+                if time.monotonic() - press_start > 1.0:
+                    start_timer(timer_durations[timer_index])
+                    return
+                time.sleep(0.05)
+            timer_index = (timer_index + 1) % len(timer_durations)
+        elif not current_button and not last_button_state:
+            hold_start = time.monotonic()
+            while not button.value:
+                if time.monotonic() - hold_start > 2.0:
+                    in_menu = False
+                    break
+                time.sleep(0.05)
+        last_button_state = current_button
+
+    update_display()
+
+# --- Timer ---
+def start_timer(duration_sec):
+    for i in range(duration_sec, 0, -1):
+        text_area.text = f"{i}s left"
+        display.refresh()
+        time.sleep(1)
+    buzzer.frequency = 1000
+    buzzer.duty_cycle = 32768
+    time.sleep(0.2)
+    buzzer.duty_cycle = 0
+    text_area.text = "Timer Done"
+    time.sleep(1)
+    update_display()
+
+# --- Meditation ---
+def meditation_mode():
+    for i in range(3):
+        text_area.text = "Inhale"
+        pixel.fill((0, 0, 50))
+        pixel.show()
+        buzzer.frequency = 2000
+        buzzer.duty_cycle = 10000
+        time.sleep(0.2)
+        buzzer.duty_cycle = 0
+        time.sleep(5)
+
+        text_area.text = "Exhale"
+        pixel.fill((0, 0, 0))
+        pixel.show()
+        buzzer.frequency = 400
+        buzzer.duty_cycle = 10000
+        time.sleep(0.2)
+        buzzer.duty_cycle = 0
+        time.sleep(6)
+    update_display()
+
+# --- Rainbow LED ---
+def rainbow_led():
+    for i in range(256):
+        pixel.fill(wheel(i))
+        pixel.show()
+        time.sleep(0.01)
+    pixel.fill((0, 0, 0))
+    pixel.show()
+
+# --- Cool Animation ---
+def animation_mode():
+    frame = 0
+    running = True
+    while running:
+        pixel.fill(wheel((frame * 5) % 256))
+        pixel.show()
+        text_area.text = f"Frame {frame}"
+        display.refresh()
+        time.sleep(0.05)
+        frame += 1
+        press_start = time.monotonic()
+        if not button.value:
+            while not button.value:
+                if time.monotonic() - press_start > 1.5:
+                    running = False
+                    break
+                time.sleep(0.05)
+    pixel.fill((0, 0, 0))
+    pixel.show()
+    update_display()
+
+# --- Flashlight ---
+def flashlight_mode():
+    pixel.fill((255, 255, 255))
+    pixel.show()
+    text_area.text = "Flashlight ON"
+    display.refresh()
+    press_start = time.monotonic()
+    while True:
+        if not button.value:
+            while not button.value:
+                if time.monotonic() - press_start > 1.5:
+                    pixel.fill((0, 0, 0))
+                    pixel.show()
+                    update_display()
+                    return
+                time.sleep(0.05)
+        time.sleep(0.05)
+
+# --- Strobe Light ---
+def strobe_mode():
+    text_area.text = "Strobe ON"
+    display.refresh()
+    running = True
+    while running:
+        pixel.fill((255, 255, 255))
+        pixel.show()
+        time.sleep(0.05)
+        pixel.fill((0, 0, 0))
+        pixel.show()
+        time.sleep(0.05)
+        press_start = time.monotonic()
+        if not button.value:
+            while not button.value:
+                if time.monotonic() - press_start > 1.5:
+                    running = False
+                    break
+                time.sleep(0.05)
+    pixel.fill((0, 0, 0))
+    pixel.show()
+    update_display()
+
+# --- Sleep ---
+def enter_sleep_mode():
+    buzzer.duty_cycle = 0
+    pixel.fill((0, 0, 0))
+    pixel.show()
+    display.root_group = None
+    while not button.value:
+        time.sleep(0.05)
+    while True:
+        if not button.value:
+            time.sleep(0.05)
+            while not button.value:
+                pass
+            break
+        time.sleep(0.05)
+    display.root_group = main_group
+    update_display()
+
+# --- Main Loop ---
+update_display()
+selected = False
+hold_threshold = 1.0
+
+while True:
+    if not button.value:
+        press_start = time.monotonic()
+        while not button.value:
+            if time.monotonic() - press_start > hold_threshold:
+                selected = True
+                break
+        else:
+            current_index = (current_index + 1) % len(menu_items)
+            update_display()
+            time.sleep(0.2)
+
+    if selected:
+        selected = False
+        update_display()
+
+        if menu_items[current_index] == "Star Trek":
+            play_star_trek()
+        elif menu_items[current_index] == "Rainbow LED":
+            rainbow_led()
+        elif menu_items[current_index] == "Timer":
+            timer_submenu()
+        elif menu_items[current_index] == "Meditation":
+            meditation_mode()
+        elif menu_items[current_index] == "Animation":
+            animation_mode()
+        elif menu_items[current_index] == "Flashlight":
+            flashlight_mode()
+        elif menu_items[current_index] == "Strobe":
+            strobe_mode()
+        elif menu_items[current_index] == "Sleep Mode":
+            enter_sleep_mode()
+
+        time.sleep(0.5)
