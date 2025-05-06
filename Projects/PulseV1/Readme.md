@@ -1,7 +1,6 @@
-#PulseV1
+# PulseV1
 
 ![OLED View](./Files/Oledview.jpg)
-
 
 **PulseV1** is a compact, 18650-powered, CircuitPython-based multifunction gadget. Designed for portability and versatility, it features music playback, lighting modes, meditation guidance, timers, and an interactive OLED interface all controlled by a single button. Ideal for learning, tinkering, or just carrying a little tech fun in your pocket.
 
@@ -63,7 +62,6 @@
 3. **Select Mode** – Hold the button for ~1 second to activate.
 4. **Exit Mode** – Hold button in most modes for ~1.5–2 seconds to return.
 
-
 ---
 
 ## 🔌 Power & Charging
@@ -73,3 +71,35 @@
 - System is designed to run continuously while charging, making it ideal for stationary or portable use.
 
 ---
+
+## 🚀 PulseV2 Concept
+
+![PulseV2](./Files/Oledview.jpg)
+
+While PulseV1 proves what’s possible in a tiny form factor, **PulseV2** envisions a leap forward in smart, modular, and wireless functionality. It will expand the project’s potential beyond a single device into a customizable platform.
+
+### 🔧 Planned Enhancements
+
+- **📱 Bluetooth LE or Wi-Fi**  
+  Wireless control via a mobile app or other smart devices, supporting remote commands, real-time status display, or live updates.
+
+- **📦 Modular Expansion Ports**  
+  Add support for additional plug-in modules: sensors, GPS, or haptic feedback add-ons.
+
+- **📈 Battery Fuel Gauge**  
+  Add dedicated circuitry to monitor exact battery percentage and health metrics.
+
+- **🧭 Multi-Button or Capacitive Touch**  
+  More input methods for quicker navigation and advanced UI interaction.
+
+- **🧏‍♂️ Sound Input & Response**  
+  Microphone for detecting sound events or enabling voice/ambient interaction.
+
+- **🌐 Cloud Sync / IoT**  
+  Sync data like timers or meditation sessions to cloud dashboards.
+
+
+
+---
+
+Stay tuned as PulseV2 development kicks off! Community suggestions are welcome as this next-gen tool evolves from concept to prototype.
