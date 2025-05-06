@@ -83,7 +83,6 @@ This board is small but mighty. Ideal for:
 
 - [Seeed XIAO RP2350 Wiki](https://wiki.seeedstudio.com/getting-started-xiao-rp2350/)
 - [CircuitPython Official Website](https://circuitpython.org/)
-- [Adafruit Library Reference](https://docs.circuitpython.org/projects/)
 - [RP2350 Datasheet/ Schm.](https://wiki.seeedstudio.com/getting-started-xiao-rp2350/#assets--resources)
 
 ---
