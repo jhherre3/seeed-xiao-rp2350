@@ -1,0 +1,50 @@
+import time
+import board
+import pwmio
+
+# Set up PWM output on D10
+buzzer = pwmio.PWMOut(board.D10, duty_cycle=0, frequency=440, variable_frequency=True)
+
+# Define note frequencies
+notes = {
+    "E5": 659, "B4": 494, "C5": 523, "D5": 587, "A4": 440,
+    "F5": 698, "A5": 880, "G5": 784, "E4": 330, "C4": 262,
+    "D4": 294, "B3": 247, "A3": 220, "GS3": 208, "GS4": 831,
+    "R": 0  # Rest
+}
+
+# Define the melody and corresponding durations
+# Durations: 1.0 = whole note, 0.5 = half note, etc.
+melody = [
+    ("E5", 0.5), ("B4", 0.25), ("C5", 0.25), ("D5", 0.5),
+    ("C5", 0.25), ("B4", 0.25), ("A4", 0.5), ("A4", 0.25),
+    ("C5", 0.25), ("E5", 0.5), ("D5", 0.25), ("C5", 0.25),
+    ("B4", 0.5), ("C5", 0.25), ("D5", 0.25), ("E5", 0.5),
+    ("C5", 0.5), ("A4", 0.5), ("A4", 0.5), ("R", 0.5),
+    ("D5", 0.75), ("F5", 0.25), ("A5", 0.5), ("G5", 0.25),
+    ("F5", 0.25), ("E5", 0.75), ("C5", 0.25), ("E5", 0.5),
+    ("D5", 0.25), ("C5", 0.25), ("B4", 0.5), ("C5", 0.25),
+    ("D5", 0.25), ("E5", 0.5), ("C5", 0.5), ("A4", 0.5),
+    ("A4", 0.5), ("R", 0.5),
+    ("E4", 1.0), ("C4", 1.0), ("D4", 1.0), ("B3", 1.0),
+    ("C4", 1.0), ("A3", 1.0), ("GS3", 1.0), ("B3", 1.0),
+    ("E4", 1.0), ("C4", 1.0), ("D4", 1.0), ("B3", 1.0),
+    ("C4", 0.5), ("E4", 0.5), ("A4", 0.5), ("A4", 0.5),
+    ("GS4", 1.5), ("R", 0.5)
+]
+
+def beep(note, duration):
+    if note == "R":
+        time.sleep(duration)
+    else:
+        buzzer.frequency = notes[note]
+        buzzer.duty_cycle = 65535 // 2  # 50% duty cycle
+        time.sleep(duration)
+        buzzer.duty_cycle = 0  # Turn off
+
+# Play the melody
+while True:
+    for note, dur in melody:
+        beep(note, dur)
+        time.sleep(0.05)  # Short pause between notes
+    time.sleep(1)  # Pause before repeating

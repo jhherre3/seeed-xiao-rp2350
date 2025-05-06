@@ -1,0 +1,66 @@
+import time
+import board
+import pwmio
+
+# Use D10 for your piezo buzzer
+buzzer = pwmio.PWMOut(board.D10, duty_cycle=0, frequency=440, variable_frequency=True)
+
+# Define note frequencies
+REST = 0
+C4 = 262
+CS4 = 277
+D4 = 294
+DS4 = 311
+E4 = 330
+F4 = 349
+FS4 = 370
+G4 = 392
+GS4 = 415
+A4 = 440
+AS4 = 466
+B4 = 494
+C5 = 523
+CS5 = 554
+D5 = 587
+DS5 = 622
+E5 = 659
+F5 = 698
+G5 = 784
+GS5 = 831
+A5 = 880
+AS5 = 932
+C6 = 1047
+GS6 = 1661
+
+# Game of Thrones melody [(note, duration_ms)]
+melody = [
+    (G4, 300), (C4, 300), (DS4, 150), (F4, 150),
+    (G4, 300), (C4, 300), (DS4, 150), (F4, 150),
+    (G4, 300), (C4, 300), (DS4, 150), (F4, 150),
+    (G4, 300), (C4, 300), (DS4, 150), (F4, 150),
+    (G4, 600), (C4, 600),
+    (DS4, 150), (F4, 150), (G4, 400), (C4, 400),
+    (DS4, 150), (F4, 150), (D4, 1200),
+
+    (F4, 600), (AS4, 600),
+    (DS4, 150), (D4, 150), (F4, 400), (AS4, 600),
+    (DS4, 150), (D4, 150), (C4, 1200),
+
+    (REST, 300), (GS5, 150), (AS5, 150), (C6, 300), (G5, 300),
+    (GS5, 150), (AS5, 150), (C6, 300), (G5, 300)
+]
+
+def play_note(freq, duration_ms):
+    if freq == REST:
+        buzzer.duty_cycle = 0
+        time.sleep(duration_ms / 1000)
+    else:
+        buzzer.frequency = freq
+        buzzer.duty_cycle = 32768  # 50% duty
+        time.sleep(duration_ms / 1000)
+        buzzer.duty_cycle = 0
+        time.sleep(0.05)  # brief pause
+
+# Play the melody
+for note, dur in melody:
+    play_note(note, dur)

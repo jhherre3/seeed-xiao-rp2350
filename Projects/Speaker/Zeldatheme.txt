@@ -1,0 +1,73 @@
+import time
+import board
+import pwmio
+
+# Output pin setup
+buzzer = pwmio.PWMOut(board.D10, duty_cycle=0, frequency=440, variable_frequency=True)
+
+# Note frequencies (subset for this melody)
+NOTE = {
+    "REST": 0,
+    "F4": 349, "FS4": 370, "G4": 392, "GS4": 415, "A4": 440, "AS4": 466,
+    "C5": 523, "CS5": 554, "D5": 587, "DS5": 622, "E5": 659,
+    "F5": 698, "FS5": 740, "G5": 784, "GS5": 831, "A5": 880, "AS5": 932,
+    "C6": 1047, "CS6": 1109, "D6": 1175
+}
+
+# Melody: (note name, duration)
+# Positive duration = normal (1=whole, 2=half, 4=quarter, 8=eighth, etc.)
+# Negative duration = dotted note
+melody = [
+    ("AS4", -2), ("F4", 8), ("F4", 8), ("AS4", 8),
+    ("GS4", 16), ("FS4", 16), ("GS4", -2),
+    ("AS4", -2), ("FS4", 8), ("FS4", 8), ("AS4", 8),
+    ("A4", 16), ("G4", 16), ("A4", -2),
+    ("REST", 1),
+
+    ("AS4", 4), ("F4", -4), ("AS4", 8), ("AS4", 16), ("C5", 16), ("D5", 16), ("DS5", 16),
+    ("F5", 2), ("F5", 8), ("F5", 8), ("F5", 8), ("FS5", 16), ("GS5", 16),
+    ("AS5", -2), ("AS5", 8), ("AS5", 8), ("GS5", 8), ("FS5", 16),
+    ("GS5", -8), ("FS5", 16), ("F5", 2), ("F5", 4),
+
+    ("DS5", -8), ("F5", 16), ("FS5", 2), ("F5", 8), ("DS5", 8),
+    ("CS5", -8), ("DS5", 16), ("F5", 2), ("DS5", 8), ("CS5", 8),
+    ("C5", -8), ("D5", 16), ("E5", 2), ("G5", 8),
+    ("F5", 16), ("F4", 16), ("F4", 16), ("F4", 16), ("F4", 16),
+    ("F4", 16), ("F4", 16), ("F4", 16), ("F4", 8), ("F4", 16), ("F4", 8),
+
+    ("AS4", 4), ("F4", -4), ("AS4", 8), ("AS4", 16), ("C5", 16), ("D5", 16), ("DS5", 16),
+    ("F5", 2), ("F5", 8), ("F5", 8), ("F5", 8), ("FS5", 16), ("GS5", 16),
+    ("AS5", -2), ("CS6", 4),
+    ("C6", 4), ("A5", 2), ("F5", 4),
+    ("FS5", -2), ("AS5", 4),
+    ("A5", 4), ("F5", 2), ("F5", 4),
+
+    ("FS5", -2), ("AS5", 4),
+    ("A5", 4), ("F5", 2), ("D5", 4),
+    ("DS5", -2), ("FS5", 4),
+    ("F5", 4), ("CS5", 2), ("AS4", 4),
+    ("C5", -8), ("D5", 16), ("E5", 2), ("G5", 8),
+    ("F5", 16), ("F4", 16), ("F4", 16), ("F4", 16), ("F4", 16),
+    ("F4", 16), ("F4", 16), ("F4", 16), ("F4", 8), ("F4", 16), ("F4", 8)
+]
+
+# Configuration
+tempo = 88
+wholenote = (60000 * 4) / tempo  # ms
+
+def play(note, duration):
+    if NOTE[note] == 0:
+        time.sleep(duration / 1000)
+    else:
+        buzzer.frequency = NOTE[note]
+        buzzer.duty_cycle = 32768  # 50%
+        time.sleep(duration / 1000 * 0.9)
+        buzzer.duty_cycle = 0
+        time.sleep(duration / 1000 * 0.1)
+
+# Play song once
+for note, dur in melody:
+    base_dur = wholenote / abs(dur)
+    if dur < 0:
+        base_dur *= 1.5  # dotted
+    play(note, base_dur)

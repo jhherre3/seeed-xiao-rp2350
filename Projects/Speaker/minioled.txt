@@ -1,0 +1,37 @@
+import time
+import board
+import displayio
+import terminalio
+from adafruit_display_text import label
+import adafruit_displayio_ssd1306
+
+# Reset any existing display connection
+displayio.release_displays()
+time.sleep(1)
+
+# Set up I2C and display
+i2c = board.I2C()
+display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
+WIDTH = 128
+HEIGHT = 32
+display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=WIDTH, height=HEIGHT)
+
+# Create the text label
+text = "Hello, World!"
+text_area = label.Label(terminalio.FONT, text=text, x=0, y=12)
+
+# Create a group and set it as the root group
+main_group = displayio.Group()
+main_group.append(text_area)
+display.root_group = main_group
+
+# Animation variables
+dx = 1  # Direction of movement
+text_width = len(text) * 6  # Approximate width of text in pixels (6px per char for terminalio)
+
+# Loop to animate
+while True:
+    text_area.x += dx
+    if text_area.x + text_width >= WIDTH or text_area.x <= 0:
+        dx *= -1  # Bounce back
+    time.sleep(0.03)  # Adjust speed here

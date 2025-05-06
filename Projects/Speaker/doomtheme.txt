@@ -1,0 +1,36 @@
+import time
+import board
+import pwmio
+
+# Define buzzer output pin
+buzzer = pwmio.PWMOut(board.D10, duty_cycle=0, frequency=440, variable_frequency=True)
+
+# Define notes (partial for ~10s)
+E2 = 82
+D3 = 147
+C3 = 131
+AS2 = 117
+B2 = 123
+E3 = 165
+
+# Notes and durations
+# Format: (frequency in Hz, duration in ms)
+melody = [
+    (E2, 200), (E2, 200), (E3, 200), (E2, 200), (E2, 200), (D3, 200), (E2, 200), (E2, 200),
+    (C3, 200), (E2, 200), (E2, 200), (AS2, 200), (E2, 200), (E2, 200), (B2, 200), (C3, 200),
+    (E2, 200), (E2, 200), (E3, 200), (E2, 200), (E2, 200), (D3, 200), (E2, 200), (E2, 200),
+    (C3, 200), (E2, 200), (E2, 200), (AS2, 400)
+]
+
+# Play the melody
+for note, duration in melody:
+    if note == 0:
+        buzzer.duty_cycle = 0
+    else:
+        buzzer.frequency = note
+        buzzer.duty_cycle = 32768  # 50% duty
+    time.sleep(duration / 1000 * 0.9)  # play for 90% of duration
+    buzzer.duty_cycle = 0             # pause between notes
+    time.sleep(duration / 1000 * 0.1)  # pause for 10%
+
+print("Finished playing 10 seconds of 'At Doom's Gate'")

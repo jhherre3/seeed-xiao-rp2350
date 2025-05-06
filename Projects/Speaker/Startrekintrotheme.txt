@@ -1,0 +1,42 @@
+import time
+import board
+import pwmio
+
+# Initialize PWM for buzzer on D10
+buzzer = pwmio.PWMOut(board.D10, duty_cycle=0, frequency=440, variable_frequency=True)
+
+# Frequency definitions for notes used in this song
+NOTE = {
+    "D4": 294, "E4": 330, "G4": 392, "A4": 440, "B4": 494,
+    "C5": 523, "D5": 587, "REST": 0
+}
+
+# Tempo
+tempo = 80
+wholenote = (60000 * 4) / tempo  # in milliseconds
+
+# Melody: (note, duration). Negative = dotted note
+melody = [
+    ("D4", -8), ("G4", 16), ("C5", -4),
+    ("B4", 8), ("G4", -16), ("E4", -16), ("A4", -16),
+    ("D5", 2)
+]
+
+# Play function
+def play(note, duration_ms):
+    freq = NOTE[note]
+    if freq == 0:
+        time.sleep(duration_ms / 1000)
+    else:
+        buzzer.frequency = freq
+        buzzer.duty_cycle = 32768  # 50%
+        time.sleep((duration_ms * 0.9) / 1000)
+        buzzer.duty_cycle = 0
+        time.sleep((duration_ms * 0.1) / 1000)
+
+# Play melody once
+for note, dur in melody:
+    duration = wholenote / abs(dur)
+    if dur < 0:
+        duration *= 1.5
+    play(note, duration)

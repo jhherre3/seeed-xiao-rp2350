@@ -1,0 +1,77 @@
+import time
+import board
+import pwmio
+
+# Set up PWM output
+buzzer = pwmio.PWMOut(board.D10, duty_cycle=0, frequency=440, variable_frequency=True)
+
+# Define required notes (frequencies in Hz)
+NOTE = {
+    "F4": 349, "G4": 392, "GS4": 415, "AS4": 466, "E4": 330,
+    "F5": 698, "DS5": 622, "GS4": 415, "AS4": 466, "C5": 523,
+    "DS4": 311, "E5": 659, "G5": 784, "R": 0
+}
+
+# Melody sequence based on the C arrays
+melody = [
+    "F4", "G4", "GS4",
+    "AS4", "GS4", "G4", "F4",
+    "F4", "E4", "F4", "G4",
+    "F4", "E4", "R",
+
+    "R", "F4", "G4", "GS4",
+    "AS4", "GS4", "G4", "G4", "F4",
+    "F4", "E4", "F4", "G4",
+    "F4", "E4", "R",
+
+    "R", "F5", "DS5", "DS5",
+    "GS4", "GS4", "AS4", "AS4", "AS4", "C5",
+    "C5", "C5", "AS4", "C5",
+    "C5", "R",
+
+    "R", "F5", "DS5", "DS5",
+    "GS4", "GS4", "AS4", "AS4", "AS4", "C5",
+    "C5", "C5", "AS4", "GS4", "C5",
+    "C5", "R"
+]
+
+tempo = [
+    4, 4, 4,
+    4, 4, 4, 4,
+    4, 4, 4, 4,
+    8, 4, 2,
+
+    4, 4, 8, 3,
+    8, 4, 8, 4, 4,
+    4, 4, 4, 4,
+    8, 4, 2,
+
+    4, 4, 4, 4,
+    4, 8, 8, 8, 4, 4,
+    3, 4, 8, 8,
+    2, 2,
+
+    4, 4, 4, 4,
+    4, 8, 8, 8, 4, 4,
+    3, 8, 8, 8, 8,
+    2, 2
+]
+
+# Play function
+def play_note(note, duration):
+    if note == "R":
+        time.sleep(duration)
+    else:
+        buzzer.frequency = NOTE[note]
+        buzzer.duty_cycle = 65535 // 2
+        time.sleep(duration)
+        buzzer.duty_cycle = 0
+
+# Main loop to play song
+while True:
+    for i in range(len(melody)):
+        beat = tempo[i]
+        duration = 0.5 * (4 / beat)  # Quarter note = 0.5s
+        play_note(melody[i], duration)
+        time.sleep(0.05)  # Short gap between notes
+    time.sleep(2)
